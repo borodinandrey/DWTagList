@@ -80,7 +80,12 @@
 
 - (void)setTags:(NSArray *)array
 {
-    textArray = [[NSArray alloc] initWithArray:array];
+    if ([array.firstObject isKindOfClass:[NSString class]]) {
+        textArray = [[NSArray alloc] initWithArray:array];
+    } else {
+        textArray = [[NSArray alloc] initWithArray:[array valueForKeyPath:@"@unionOfObjects.description"]];
+    }
+    
     sizeFit = CGSizeZero;
     if (automaticResize) {
         [self display];
