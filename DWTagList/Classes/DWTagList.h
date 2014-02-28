@@ -11,15 +11,13 @@
 
 @interface DWTagList : UIScrollView
 {
-    UIView      *view;
     NSArray     *textArray;
     CGSize      sizeFit;
     UIColor     *lblBackgroundColor;
 }
 
-@property (nonatomic) BOOL viewOnly;
+@property (nonatomic) BOOL readonly;
 @property (nonatomic) BOOL showTagMenu;
-@property (nonatomic, strong) UIView *view;
 @property (nonatomic, strong) NSArray *textArray;
 @property (nonatomic, weak) id<DWTagListDelegate> tagDelegate;
 @property (nonatomic, strong) UIColor *highlightedBackgroundColor;

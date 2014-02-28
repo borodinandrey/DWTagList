@@ -30,13 +30,12 @@
 
 @implementation DWTagList
 
-@synthesize view, textArray, automaticResize;
+@synthesize textArray, automaticResize;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self addSubview:view];
         [self setClipsToBounds:YES];
         self.automaticResize = DEFAULT_AUTOMATIC_RESIZE;
         self.highlightedBackgroundColor = HIGHLIGHTED_BACKGROUND_COLOR;
@@ -59,7 +58,6 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self addSubview:view];
         [self setClipsToBounds:YES];
         self.highlightedBackgroundColor = HIGHLIGHTED_BACKGROUND_COLOR;
         self.font = [UIFont systemFontOfSize:FONT_SIZE_DEFAULT];
@@ -108,10 +106,10 @@
     [self setNeedsLayout];
 }
 
-- (void)setViewOnly:(BOOL)viewOnly
+- (void)setReadonly:(BOOL)viewOnly
 {
-    if (_viewOnly != viewOnly) {
-        _viewOnly = viewOnly;
+    if (_readonly != viewOnly) {
+        _readonly = viewOnly;
         [self setNeedsLayout];
     }
 }
@@ -186,7 +184,7 @@
 
         [self addSubview:tagView];
 
-        if (!_viewOnly) {
+        if (!_readonly) {
             [tagView.button addTarget:self action:@selector(touchDownInside:) forControlEvents:UIControlEventTouchDown];
             [tagView.button addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
             [tagView.button addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
@@ -285,7 +283,7 @@
 
 - (void)dealloc
 {
-    view = nil;
+//    view = nil;
     textArray = nil;
     lblBackgroundColor = nil;
 }
