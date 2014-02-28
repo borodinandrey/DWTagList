@@ -43,7 +43,7 @@
 
 - (void)tagButtonDeleteAction:(DWTagButton *)tagButton;
 
-- (BOOL)tagButtonCanBecomeFirstResponder;
+- (BOOL)tagButtonCanBecomeFirstResponder:(DWTagButton *)tagButton;
 - (BOOL)tagButtonMenuControllerCanPerformAction:(SEL)action;
 
 @end

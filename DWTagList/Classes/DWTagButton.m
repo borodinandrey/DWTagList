@@ -107,7 +107,7 @@
 #pragma mark - UIMenuController
 
 - (BOOL)canBecomeFirstResponder {
-    return [self.delegate tagButtonCanBecomeFirstResponder];
+    return [self.delegate tagButtonCanBecomeFirstResponder:self];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

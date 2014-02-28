@@ -26,6 +26,7 @@
 @property (assign, readwrite, nonatomic) BOOL showMenu;
 @property (assign, readwrite, nonatomic) BOOL readonly;
 @property (assign, readwrite, nonatomic) BOOL showDeleteIcon;
+@property (assign, readwrite, nonatomic) BOOL showAddTagButton;
 
 // Background
 //
@@ -55,7 +56,7 @@
 
 // Dynamic height
 //
-+ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons;
++ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons showAddTagButton:(BOOL)showAddTagButton;
 
 @end
 
@@ -68,6 +69,7 @@
 - (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action;
 - (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag;
 - (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag;
+- (void)tagViewAddTagButtonAction:(DWTagList *)tagView;
 
 @end
 

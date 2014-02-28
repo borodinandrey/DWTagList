@@ -32,6 +32,7 @@
     _tagList.borderColor = [UIColor lightGrayColor];
     _tagList.borderWidth = 1.f;
     _tagList.showDeleteIcon = YES;
+    _tagList.showAddTagButton = YES;
     [self.view addSubview:_tagList];
 }
 
@@ -42,7 +43,7 @@
 }
 
 - (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message (disable this alert to see menu on tag)"
                                                     message:[NSString stringWithFormat:@"You tapped tag %@", tag]
                                                    delegate:nil
                                           cancelButtonTitle:@"Ok"
@@ -51,7 +52,15 @@
 }
 
 - (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag {
+    [_array removeObject:tag];
     NSLog(@"didRemoveTag %@", tag);
+}
+
+- (void)tagViewAddTagButtonAction:(DWTagList *)tagView {
+    [_array addObject:@"trololo"];
+    [_tagList setTags:_array];
+    
+    NSLog(@"tagViewAddTagButtonAction");
 }
 
 #pragma mark - Actions

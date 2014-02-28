@@ -10,9 +10,20 @@
 #import "DWTagButton.h"
 
 
+@implementation DWTagList (Strings)
+
++ (NSString *)addTagString {
+    return NSLocalizedString(@"Add tag", @"Caption for Add tag button");
+}
+
+@end
+
+
 @interface DWTagList () <DWTagButtonDelegate> {
     CGSize sizeFit;
 }
+
+@property (strong, readwrite, nonatomic) DWTagButton *addTagButton;
 
 @end
 
@@ -53,31 +64,36 @@
     self.textShadowOffset = kTextShadowOffset;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    [self display];
-}
-
 #pragma mark - Tags
 
 - (void)setTags:(NSArray *)tags_ {
     _tags = [NSArray arrayWithArray:tags_];
     
     sizeFit = CGSizeZero;
-    if (self.automaticResize) {
-        [self display];
-        self.frame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame), sizeFit.width, sizeFit.height);
-    } else {
-        [self setNeedsLayout];
-    }
+    
+    [self setNeedsReloadTagView];
 }
 
 #pragma mark - Display
 
-- (void)display {
+- (void)setNeedsReloadTagView {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                             selector:@selector(needsReloadTagView)
+                                               object:nil];
+    
+    // on next run loop
+    [self performSelector:@selector(needsReloadTagView)
+               withObject:nil
+               afterDelay:0.f];
+}
+
+- (void)needsReloadTagView {
     NSMutableArray *tagViews = [NSMutableArray array];
     for (UIView *subview in self.subviews) {
+        if (subview == self.addTagButton) {
+            continue;
+        }
+        
         if ([subview isKindOfClass:[UIButton class]]) {
             UIButton *button = (UIButton *)subview;
             [button removeTarget:nil action:nil forControlEvents:UIControlEventAllEvents];
@@ -86,9 +102,7 @@
         [subview removeFromSuperview];
     }
 
-    CGRect previousFrame = CGRectZero;
-    BOOL gotPreviousFrame = NO;
-
+    CGRect previousFrame = CGRectNull;
     for (id tag in self.tags) {
         DWTagButton *tagButton = nil;
         if (tagViews.count > 0) {
@@ -98,37 +112,70 @@
             tagButton = [[DWTagButton alloc] init];
         }
         
-        CGSize tagButtonSize = [DWTagButton tagButtonSize:tag
-                                                     font:self.textFont
-                                       constrainedToWidth:CGRectGetWidth(self.frame) - self.horizontalPadding * 2
-                                                  padding:CGSizeMake(self.horizontalPadding, self.verticalPadding)
-                                             minimumWidth:self.minimumWidth
-                                                 showIcon:self.showDeleteIcon];
-        
-        CGPoint origin = CGPointZero;
-        if (gotPreviousFrame) {
-            CGFloat left = CGRectGetMinX(previousFrame) + CGRectGetWidth(previousFrame);
-            if (left + tagButtonSize.width + self.labelMargin > CGRectGetWidth(self.frame)) {
-                origin = CGPointMake(0.f, CGRectGetMinY(previousFrame) + tagButtonSize.height + self.bottomMargin);
-            } else {
-                origin = CGPointMake(left + self.labelMargin, CGRectGetMinY(previousFrame));
-            }
-        }
-        
-        
         tagButton.tagValue = tag;
         [self configureTagButton:tagButton];
         
-        tagButton.frame = CGRectMake(origin.x, origin.y, tagButtonSize.width, tagButtonSize.height);
+        if (!self.readonly) {
+            [tagButton addTarget:self action:@selector(touchDownInside:) forControlEvents:UIControlEventTouchDown];
+            [tagButton addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
+            [tagButton addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
+            [tagButton addTarget:self action:@selector(touchDragInside:) forControlEvents:UIControlEventTouchDragInside];
+        }
+        
+        tagButton.frame = [self frameForTagValue:tag previousFrame:previousFrame];
         [self addSubview:tagButton];
 
         previousFrame = tagButton.frame;
-        gotPreviousFrame = YES;
+    }
+    
+    if (self.showAddTagButton) {
+        if (!self.addTagButton) {
+            self.addTagButton = [[DWTagButton alloc] init];
+            self.addTagButton.tagValue = [DWTagList addTagString];
+            [self.addTagButton addTarget:self action:@selector(touchDownInside:) forControlEvents:UIControlEventTouchDown];
+            [self.addTagButton addTarget:self action:@selector(addTagButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+            [self.addTagButton addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
+            [self.addTagButton addTarget:self action:@selector(touchDragInside:) forControlEvents:UIControlEventTouchDragInside];
+            [self addSubview:self.addTagButton];
+        }
+        [self configureTagButton:self.addTagButton];
+        [self.addTagButton setTagIconImage:[UIImage imageNamed:@"DWTagList.bundle/images/tag_button_icon_add.png"]];
+        self.addTagButton.frame = [self frameForTagValue:[DWTagList addTagString] previousFrame:previousFrame];
+        previousFrame = self.addTagButton.frame;
+    } else {
+        if (self.addTagButton) {
+            [self.addTagButton removeFromSuperview], self.addTagButton = nil;
+        }
     }
 
     sizeFit = CGSizeMake(CGRectGetWidth(self.frame),
                          CGRectGetMinY(previousFrame) + CGRectGetHeight(previousFrame) + self.bottomMargin + 1.0f);
     self.contentSize = sizeFit;
+    
+    if (self.automaticResize) {
+        self.frame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame), sizeFit.width, sizeFit.height);
+    }
+}
+
+- (CGRect)frameForTagValue:(id)tagValue previousFrame:(CGRect)previousFrame {
+    CGSize tagButtonSize = [DWTagButton tagButtonSize:tagValue
+                                                 font:self.textFont
+                                   constrainedToWidth:CGRectGetWidth(self.frame) - self.horizontalPadding * 2
+                                              padding:CGSizeMake(self.horizontalPadding, self.verticalPadding)
+                                         minimumWidth:self.minimumWidth
+                                             showIcon:self.showDeleteIcon];
+    
+    CGPoint origin = CGPointZero;
+    if (!CGRectIsNull(previousFrame)) {
+        CGFloat left = CGRectGetMinX(previousFrame) + CGRectGetWidth(previousFrame);
+        if (left + tagButtonSize.width + self.labelMargin > CGRectGetWidth(self.frame)) {
+            origin = CGPointMake(0.f, CGRectGetMinY(previousFrame) + tagButtonSize.height + self.bottomMargin);
+        } else {
+            origin = CGPointMake(left + self.labelMargin, CGRectGetMinY(previousFrame));
+        }
+    }
+    
+    return CGRectMake(origin.x, origin.y, tagButtonSize.width, tagButtonSize.height);
 }
 
 - (void)configureTagButton:(DWTagButton *)tagButton {
@@ -142,13 +189,6 @@
     [tagButton setTagTextColor:self.textColor];
     [tagButton setTagTextShadowColor:self.textShadowColor];
     [tagButton setTagTextShadowOffset:self.textShadowOffset];
-
-    if (!self.readonly) {
-        [tagButton addTarget:self action:@selector(touchDownInside:) forControlEvents:UIControlEventTouchDown];
-        [tagButton addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
-        [tagButton addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
-        [tagButton addTarget:self action:@selector(touchDragInside:) forControlEvents:UIControlEventTouchDragInside];
-    }
     
     if (self.showDeleteIcon) {
         [tagButton setTagIconImage:[UIImage imageNamed:@"DWTagList.bundle/images/tag_button_icon_delete.png"]];
@@ -169,7 +209,10 @@
     }
 }
 
-- (BOOL)tagButtonCanBecomeFirstResponder {
+- (BOOL)tagButtonCanBecomeFirstResponder:(DWTagButton *)tagButton {
+    if (tagButton == self.addTagButton) {
+        return NO;
+    }
     return self.showMenu;
 }
 
@@ -196,11 +239,13 @@
     DWTagButton *tagButton = (DWTagButton *)sender;
     [tagButton setBackgroundColor:self.tagBackgroundColor];
     
-    [tagButton becomeFirstResponder];
-    
-    UIMenuController *menuController = [UIMenuController sharedMenuController];
-    [menuController setTargetRect:tagButton.frame inView:self];
-    [menuController setMenuVisible:YES animated:YES];
+    if (self.showMenu) {
+        [tagButton becomeFirstResponder];
+        
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        [menuController setTargetRect:tagButton.frame inView:self];
+        [menuController setMenuVisible:YES animated:YES];
+    }
     
     if ([self.tagDelegate respondsToSelector:@selector(tagView:didSelectTag:)]) {
         [self.tagDelegate tagView:self didSelectTag:tagButton.tagValue];
@@ -215,6 +260,15 @@
 - (void)touchDragInside:(id)sender {
     UIButton *button = (UIButton *)sender;
     [button setBackgroundColor:self.tagBackgroundColor];
+}
+
+- (void)addTagButtonAction:(id)sender {
+    DWTagButton *tagButton = (DWTagButton *)sender;
+    [tagButton setBackgroundColor:self.tagBackgroundColor];
+    
+    if ([self.tagDelegate respondsToSelector:@selector(tagViewAddTagButtonAction:)]) {
+        [self.tagDelegate tagViewAddTagButtonAction:self];
+    }
 }
 
 #pragma mark - Setters
@@ -244,6 +298,13 @@
 - (void)setHighlightedBackgroundColor:(UIColor *)highlightedBackgroundColor {
     _highlightedBackgroundColor = highlightedBackgroundColor;
     [self setNeedsLayout];
+}
+
+- (void)setShowAddTagButton:(BOOL)showAddTagButton {
+    if (_showAddTagButton != showAddTagButton) {
+        _showAddTagButton = showAddTagButton;
+        [self setNeedsReloadTagView];
+    }
 }
 
 #pragma mark - Border
@@ -287,11 +348,18 @@
 
 #pragma mark - Dynamic height
 
-+ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons {
++ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons showAddTagButton:(BOOL)showAddTagButton {
     CGRect previousFrame = CGRectZero;
     BOOL gotPreviousFrame = NO;
     
-    for (id tag in tags) {
+    NSArray *resultTags = tags;
+    if (showAddTagButton) {
+        NSMutableArray *mutableTags = [NSMutableArray arrayWithArray:tags];
+        [mutableTags addObject:[DWTagList addTagString]];
+        resultTags = mutableTags;
+    }
+    
+    for (id tag in resultTags) {
         CGSize tagSize = [DWTagButton tagButtonSize:tag
                                                font:font
                                  constrainedToWidth:width - kHorizontalPadding * 2
