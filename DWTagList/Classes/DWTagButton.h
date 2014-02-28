@@ -25,12 +25,14 @@
 - (void)setTagTextColor:(UIColor *)textColor;
 - (void)setTagTextShadowColor:(UIColor *)textShadowColor;
 - (void)setTagTextShadowOffset:(CGSize)textShadowOffset;
+- (void)setTagIconImage:(UIImage *)image;
 
 + (CGSize)tagButtonSize:(id)tag
                    font:(UIFont *)font
      constrainedToWidth:(CGFloat)maxWidth
                 padding:(CGSize)padding
-           minimumWidth:(CGFloat)minimumWidth;
+           minimumWidth:(CGFloat)minimumWidth
+               showIcon:(BOOL)showIcon;
 
 @end
 

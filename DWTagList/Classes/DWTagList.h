@@ -55,7 +55,7 @@
 
 // Dynamic height
 //
-+ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width;
++ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons;
 
 @end
 
@@ -66,14 +66,6 @@
 @optional
 
 - (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action;
-
-/**
- *  Action for touch up inside event
- *  if showMenu == YES method not called
- *
- *  @param tagView sender
- *  @param tag     tag value
- */
 - (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag;
 - (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag;
 

@@ -18,7 +18,11 @@ static CGFloat const kFontSizeDefailt = 13.f;
 static CGFloat const kHorizontalPadding = 7.f;
 static CGFloat const kVerticalPadding = 3.f;
 
-static CGFloat kBorderWidth = 1.f;
+static CGFloat const kBorderWidth = 1.f;
+
+static CGFloat const kTagButtonIconRightPadding = 6.f;
+static CGFloat const kTagButtonIconLeftPadding = 2.f;
+static CGFloat const kTagButtonIconWidth = 12.f;
 
 #define kBackgroundColor [UIColor colorWithRed:0.93f green:0.93f blue:0.93f alpha:1.f]
 #define kHighlightedBackgroundColor [UIColor colorWithRed:0.40f green:0.80f blue:1.f alpha:0.5f]

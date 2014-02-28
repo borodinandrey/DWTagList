@@ -8,10 +8,13 @@
 
 #import "DWTagButton.h"
 #import <QuartzCore/QuartzCore.h>
+#import "DWTagListStyles.h"
+
 
 @interface DWTagButton ()
 
 @property (strong, readwrite, nonatomic) UILabel *tagLabel;
+@property (strong, readwrite, nonatomic) UIImageView *iconImageView;
 
 @end
 
@@ -28,6 +31,10 @@
         self.tagLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         self.tagLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.tagLabel];
+        
+        self.iconImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+        self.iconImageView.contentMode = UIViewContentModeCenter;
+        [self addSubview:self.iconImageView];
     }
     return self;
 }
@@ -35,7 +42,14 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    self.tagLabel.frame = self.bounds;
+    CGSize s = self.bounds.size;
+    
+    if (self.iconImageView.image) {
+        self.iconImageView.frame = CGRectMake(s.width - kTagButtonIconRightPadding - kTagButtonIconWidth, 0.f, kTagButtonIconWidth, s.height);
+        s.width -= kTagButtonIconLeftPadding + kTagButtonIconWidth + kTagButtonIconRightPadding;
+    }
+    
+    self.tagLabel.frame = CGRectMake(0.f, 0.f, s.width, s.height);
 }
 
 #pragma mark - Content
@@ -86,6 +100,10 @@
     self.tagLabel.shadowOffset = textShadowOffset;
 }
 
+- (void)setTagIconImage:(UIImage *)image {
+    self.iconImageView.image = image;
+}
+
 #pragma mark - UIMenuController
 
 - (BOOL)canBecomeFirstResponder {
@@ -112,8 +130,14 @@
                    font:(UIFont *)font
      constrainedToWidth:(CGFloat)maxWidth
                 padding:(CGSize)padding
-           minimumWidth:(CGFloat)minimumWidth {
+           minimumWidth:(CGFloat)minimumWidth
+               showIcon:(BOOL)showIcon {
     CGSize textSize;
+    
+    if (showIcon) {
+        maxWidth -= kTagButtonIconLeftPadding + kTagButtonIconWidth + kTagButtonIconRightPadding;
+    }
+    
     if ([tag isKindOfClass:[NSString class]]) {
         textSize = [(NSString *)tag sizeWithFont:font forWidth:maxWidth lineBreakMode:NSLineBreakByTruncatingTail];
     } else if ([tag isKindOfClass:[NSAttributedString class]]) {
@@ -126,6 +150,10 @@
     }
     
     textSize.width = MAX(textSize.width, minimumWidth);
+    
+    if (showIcon) {
+        textSize.width += kTagButtonIconLeftPadding + kTagButtonIconWidth + kTagButtonIconRightPadding;
+    }
     
     textSize.width += padding.width * 2;
     textSize.height += padding.height * 2;

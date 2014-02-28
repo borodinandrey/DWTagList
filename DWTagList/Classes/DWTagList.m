@@ -99,10 +99,11 @@
         }
         
         CGSize tagButtonSize = [DWTagButton tagButtonSize:tag
-                                                   font:self.textFont
-                                     constrainedToWidth:CGRectGetWidth(self.frame) - self.horizontalPadding * 2
-                                                padding:CGSizeMake(self.horizontalPadding, self.verticalPadding)
-                                           minimumWidth:self.minimumWidth];
+                                                     font:self.textFont
+                                       constrainedToWidth:CGRectGetWidth(self.frame) - self.horizontalPadding * 2
+                                                  padding:CGSizeMake(self.horizontalPadding, self.verticalPadding)
+                                             minimumWidth:self.minimumWidth
+                                                 showIcon:self.showDeleteIcon];
         
         CGPoint origin = CGPointZero;
         if (gotPreviousFrame) {
@@ -114,9 +115,11 @@
             }
         }
         
-        tagButton.frame = CGRectMake(origin.x, origin.y, tagButtonSize.width, tagButtonSize.height);
+        
         tagButton.tagValue = tag;
         [self configureTagButton:tagButton];
+        
+        tagButton.frame = CGRectMake(origin.x, origin.y, tagButtonSize.width, tagButtonSize.height);
         [self addSubview:tagButton];
 
         previousFrame = tagButton.frame;
@@ -145,6 +148,12 @@
         [tagButton addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
         [tagButton addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
         [tagButton addTarget:self action:@selector(touchDragInside:) forControlEvents:UIControlEventTouchDragInside];
+    }
+    
+    if (self.showDeleteIcon) {
+        [tagButton setTagIconImage:[UIImage imageNamed:@"DWTagList.bundle/images/tag_button_icon_delete.png"]];
+    } else {
+        [tagButton setTagIconImage:nil];
     }
 }
 
@@ -278,7 +287,7 @@
 
 #pragma mark - Dynamic height
 
-+ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width {
++ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width showIcons:(BOOL)showIcons {
     CGRect previousFrame = CGRectZero;
     BOOL gotPreviousFrame = NO;
     
@@ -287,7 +296,8 @@
                                                font:font
                                  constrainedToWidth:width - kHorizontalPadding * 2
                                             padding:CGSizeMake(kHorizontalPadding, kVerticalPadding)
-                                       minimumWidth:0.f];
+                                       minimumWidth:0.f
+                                           showIcon:showIcons];
         
         CGRect tagFrame = CGRectMake(0.f, 0.f, tagSize.width, tagSize.height);
         if (gotPreviousFrame) {

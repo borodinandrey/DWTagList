@@ -25,12 +25,13 @@
                         @"Tag Label 2",
                         @"Tag Label 3",
                         @"Tag Label 4",
-                        @"Long long long long long Tag", nil];
+                        @"Long long long long long Tag vgbhjknhbgvjbknhbvghbjknjhbv", nil];
     _tagList.tags = _array;
     _tagList.tagDelegate = self;
     _tagList.cornerRadius = 4.f;
     _tagList.borderColor = [UIColor lightGrayColor];
     _tagList.borderWidth = 1.f;
+    _tagList.showDeleteIcon = YES;
     [self.view addSubview:_tagList];
 }
 
