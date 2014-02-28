@@ -7,77 +7,75 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol DWTagListDelegate, DWTagViewDelegate;
+@protocol DWTagListDelegate;
+
 
 @interface DWTagList : UIScrollView
-{
-    NSArray     *textArray;
-    CGSize      sizeFit;
-    UIColor     *lblBackgroundColor;
-}
 
-@property (nonatomic) BOOL readonly;
-@property (nonatomic) BOOL showTagMenu;
-@property (nonatomic, strong) NSArray *textArray;
-@property (nonatomic, weak) id<DWTagListDelegate> tagDelegate;
-@property (nonatomic, strong) UIColor *highlightedBackgroundColor;
-@property (nonatomic) BOOL automaticResize;
-@property (nonatomic, strong) UIFont *font;
-@property (nonatomic, assign) CGFloat labelMargin;
-@property (nonatomic, assign) CGFloat bottomMargin;
-@property (nonatomic, assign) CGFloat horizontalPadding;
-@property (nonatomic, assign) CGFloat verticalPadding;
-@property (nonatomic, assign) CGFloat minimumWidth;
-@property (nonatomic, assign) CGFloat cornerRadius;
-@property (nonatomic, strong) UIColor *borderColor;
-@property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIColor *textShadowColor;
-@property (nonatomic, assign) CGSize textShadowOffset;
+// Tags
+//
+@property (copy, readwrite, nonatomic) NSArray *tags;
 
-- (void)setTagBackgroundColor:(UIColor *)color;
-- (void)setTagHighlightColor:(UIColor *)color;
-- (void)setTags:(NSArray *)array;
-- (void)display;
-- (CGSize)fittedSize;
+// Delegate
+//
+@property (weak, readwrite, nonatomic) id<DWTagListDelegate> tagDelegate;
 
-@end
+// Behaviour
+//
+@property (assign, readwrite, nonatomic) BOOL automaticResize;
+@property (assign, readwrite, nonatomic) BOOL showMenu;
+@property (assign, readwrite, nonatomic) BOOL readonly;
+@property (assign, readwrite, nonatomic) BOOL showDeleteIcon;
 
-@interface DWTagView : UIView
+// Background
+//
+@property (strong, readwrite, nonatomic) UIColor *tagBackgroundColor;
+@property (strong, readwrite, nonatomic) UIColor *highlightedBackgroundColor;
 
-@property (nonatomic, strong) UIButton              *button;
-@property (nonatomic, strong) UILabel               *label;
-@property (nonatomic, weak)   id<DWTagViewDelegate> delegate;
+// Geometry
+//
+@property (assign, readwrite, nonatomic) CGFloat labelMargin;
+@property (assign, readwrite, nonatomic) CGFloat bottomMargin;
+@property (assign, readwrite, nonatomic) CGFloat horizontalPadding;
+@property (assign, readwrite, nonatomic) CGFloat verticalPadding;
+@property (assign, readwrite, nonatomic) CGFloat minimumWidth;
 
-- (void)updateWithString:(NSString*)text
-                    font:(UIFont*)font
-      constrainedToWidth:(CGFloat)maxWidth
-                 padding:(CGSize)padding
-            minimumWidth:(CGFloat)minimumWidth;
-- (void)setLabelText:(NSString*)text;
-- (void)setCornerRadius:(CGFloat)cornerRadius;
-- (void)setBorderColor:(CGColorRef)borderColor;
-- (void)setBorderWidth:(CGFloat)borderWidth;
-- (void)setTextColor:(UIColor*)textColor;
-- (void)setTextShadowColor:(UIColor*)textShadowColor;
-- (void)setTextShadowOffset:(CGSize)textShadowOffset;
+// Border
+//
+@property (assign, readwrite, nonatomic) CGFloat cornerRadius;
+@property (assign, readwrite, nonatomic) CGFloat borderWidth;
+@property (strong, readwrite, nonatomic) UIColor *borderColor;
+
+// Text
+//
+@property (strong, readwrite, nonatomic) UIFont *textFont;
+@property (strong, readwrite, nonatomic) UIColor *textColor;
+@property (strong, readwrite, nonatomic) UIColor *textShadowColor;
+@property (assign, readwrite, nonatomic) CGSize textShadowOffset;
+
+// Dynamic height
+//
++ (CGFloat)heightForTags:(NSArray *)tags font:(UIFont *)font width:(CGFloat)width;
 
 @end
 
+#pragma mark - Delegate
 
 @protocol DWTagListDelegate <NSObject>
 
 @optional
 
-- (void)selectedTag:(NSString *)tagName;
-- (void)tagListTagsChanged:(DWTagList *)tagList;
+- (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action;
+
+/**
+ *  Action for touch up inside event
+ *  if showMenu == YES method not called
+ *
+ *  @param tagView sender
+ *  @param tag     tag value
+ */
+- (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag;
+- (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag;
 
 @end
 
-@protocol DWTagViewDelegate <NSObject>
-
-@required
-
-- (void)tagViewWantsToBeDeleted:(DWTagView *)tagView;
-
-@end

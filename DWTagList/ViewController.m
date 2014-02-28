@@ -14,37 +14,46 @@
 
 @implementation ViewController
 
-- (void)selectedTag:(NSString *)tagName{
+- (void)viewDidLoad {
+    [super viewDidLoad];
     
+    _tagList = [[DWTagList alloc] initWithFrame:CGRectMake(20.0f, 70.0f, self.view.bounds.size.width-40.0f, 50.0f)];
+    _tagList.automaticResize = YES;
+    _tagList.showMenu = YES;
+    _array = [[NSMutableArray alloc] initWithObjects:@"Foo",
+                        @"Tag Label 1",
+                        @"Tag Label 2",
+                        @"Tag Label 3",
+                        @"Tag Label 4",
+                        @"Long long long long long Tag", nil];
+    _tagList.tags = _array;
+    _tagList.tagDelegate = self;
+    _tagList.cornerRadius = 4.f;
+    _tagList.borderColor = [UIColor lightGrayColor];
+    _tagList.borderWidth = 1.f;
+    [self.view addSubview:_tagList];
+}
+
+#pragma mark - DWTagListDelegate
+
+- (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action {
+    return (action == @selector(delete:));
+}
+
+- (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message"
-                                                    message:[NSString stringWithFormat:@"You tapped tag %@", tagName]
+                                                    message:[NSString stringWithFormat:@"You tapped tag %@", tag]
                                                    delegate:nil
                                           cancelButtonTitle:@"Ok"
                                           otherButtonTitles:nil];
     [alert show];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    _tagList = [[DWTagList alloc] initWithFrame:CGRectMake(20.0f, 70.0f, self.view.bounds.size.width-40.0f, 50.0f)];
-    [_tagList setAutomaticResize:YES];
-    _array = [[NSMutableArray alloc] initWithObjects:@"Foo",
-                        @"Tag Label 1",
-                        @"Tag Label 2",
-                        @"Tag Label 3",
-                        @"Tag Label 4",
-                        @"Long long long long long long Tag", nil];
-    [_tagList setTags:_array];
-    [_tagList setTagDelegate:self];
-
-    // Customisation
-    [_tagList setCornerRadius:4.0f];
-    [_tagList setBorderColor:[UIColor lightGrayColor]];
-    [_tagList setBorderWidth:1.0f];
-
-    [self.view addSubview:_tagList];
+- (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag {
+    NSLog(@"didRemoveTag %@", tag);
 }
+
+#pragma mark - Actions
 
 - (IBAction)tappedAdd:(id)sender
 {
