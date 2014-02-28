@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/podkovyrin/DWTagList.git" }
   s.platform     = :ios, '6.0'
   s.source_files = 'DWTagList/Classes/*.{h,m}'
+  s.resources = 'DWTagList/DWTagList.bundle'
   s.requires_arc = true
   s.frameworks   = 'QuartzCore'
 end

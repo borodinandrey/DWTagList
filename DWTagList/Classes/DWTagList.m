@@ -303,7 +303,13 @@
         gotPreviousFrame = YES;
     }
     
-    return previousFrame.origin.y + previousFrame.size.height + kBottomMargin + 1.f;
+    CGFloat height = previousFrame.origin.y + previousFrame.size.height + kBottomMargin + 1.f;
+    
+#if defined(__LP64__) && __LP64__
+    return ceil(height);
+#else
+    return ceilf(height);
+#endif
 }
 
 @end
