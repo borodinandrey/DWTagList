@@ -64,6 +64,13 @@
     self.textShadowOffset = kTextShadowOffset;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    [self needsReloadTagView];
+}
+
+
 #pragma mark - Tags
 
 - (void)setTags:(NSArray *)tags_ {
@@ -71,21 +78,15 @@
     
     sizeFit = CGSizeZero;
     
-    [self setNeedsReloadTagView];
+    if (self.automaticResize) {
+        [self needsReloadTagView];
+        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeFit.width, sizeFit.height);
+    } else {
+        [self setNeedsLayout];
+    }
 }
 
 #pragma mark - Display
-
-- (void)setNeedsReloadTagView {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(needsReloadTagView)
-                                               object:nil];
-    
-    // on next run loop
-    [self performSelector:@selector(needsReloadTagView)
-               withObject:nil
-               afterDelay:0.f];
-}
 
 - (void)needsReloadTagView {
     NSMutableArray *tagViews = [NSMutableArray array];
@@ -101,7 +102,7 @@
         }
         [subview removeFromSuperview];
     }
-
+    
     CGRect previousFrame = CGRectNull;
     for (id tag in self.tags) {
         DWTagButton *tagButton = nil;
@@ -124,7 +125,7 @@
         
         tagButton.frame = [self frameForTagValue:tag previousFrame:previousFrame];
         [self addSubview:tagButton];
-
+        
         previousFrame = tagButton.frame;
     }
     
@@ -147,14 +148,10 @@
             [self.addTagButton removeFromSuperview], self.addTagButton = nil;
         }
     }
-
+    
     sizeFit = CGSizeMake(CGRectGetWidth(self.frame),
                          CGRectGetMinY(previousFrame) + CGRectGetHeight(previousFrame) + self.bottomMargin + 1.0f);
     self.contentSize = sizeFit;
-    
-    if (self.automaticResize) {
-        self.frame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame), sizeFit.width, sizeFit.height);
-    }
 }
 
 - (CGRect)frameForTagValue:(id)tagValue previousFrame:(CGRect)previousFrame {
@@ -303,7 +300,13 @@
 - (void)setShowAddTagButton:(BOOL)showAddTagButton {
     if (_showAddTagButton != showAddTagButton) {
         _showAddTagButton = showAddTagButton;
-        [self setNeedsReloadTagView];
+        
+        if (self.automaticResize) {
+            [self needsReloadTagView];
+            self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeFit.width, sizeFit.height);
+        } else {
+            [self setNeedsLayout];
+        }
     }
 }
 
