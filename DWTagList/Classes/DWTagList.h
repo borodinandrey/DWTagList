@@ -23,7 +23,6 @@
 // Behaviour
 //
 @property (assign, readwrite, nonatomic) BOOL automaticResize;
-@property (assign, readwrite, nonatomic) BOOL showMenu;
 @property (assign, readwrite, nonatomic) BOOL readonly;
 @property (assign, readwrite, nonatomic) BOOL showDeleteIcon;
 @property (assign, readwrite, nonatomic) BOOL showAddTagButton;
@@ -66,10 +65,8 @@
 
 @optional
 
-- (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action;
-- (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag;
-- (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag;
-- (void)tagViewAddTagButtonAction:(DWTagList *)tagView;
+- (void)tagView:(DWTagList *)tagView tagButtonAction:(UIButton *)tagButton tagValue:(id)tagValue;
+- (void)tagView:(DWTagList *)tagView addButtonAction:(UIButton *)addButton;
 
 @end
 

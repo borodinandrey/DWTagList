@@ -19,7 +19,6 @@
     
     _tagList = [[DWTagList alloc] initWithFrame:CGRectMake(20.0f, 70.0f, self.view.bounds.size.width-40.0f, 50.0f)];
     _tagList.automaticResize = YES;
-    _tagList.showMenu = YES;
     _array = [[NSMutableArray alloc] initWithObjects:@"Foo",
                         @"Tag Label 1",
                         @"Tag Label 2",
@@ -38,29 +37,22 @@
 
 #pragma mark - DWTagListDelegate
 
-- (BOOL)tagView:(DWTagList *)tagView menuControllerCanPerformAction:(SEL)action {
-    return (action == @selector(delete:));
-}
-
-- (void)tagView:(DWTagList *)tagView didSelectTag:(id)tag {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message (disable this alert to see menu on tag)"
-                                                    message:[NSString stringWithFormat:@"You tapped tag %@", tag]
+- (void)tagView:(DWTagList *)tagView tagButtonAction:(UIButton *)tagButton tagValue:(id)tagValue {
+    NSLog(@"tagButtonAction %@", tagValue);
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
+                                                    message:[NSString stringWithFormat:@"You tapped tag %@", tagValue]
                                                    delegate:nil
-                                          cancelButtonTitle:@"Ok"
+                                          cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
 }
 
-- (void)tagView:(DWTagList *)tagView didRemoveTag:(id)tag {
-    [_array removeObject:tag];
-    NSLog(@"didRemoveTag %@", tag);
-}
-
-- (void)tagViewAddTagButtonAction:(DWTagList *)tagView {
+- (void)tagView:(DWTagList *)tagView addButtonAction:(UIButton *)addButton {
+    NSLog(@"addButtonAction");
+    
     [_array addObject:@"trololo"];
     [_tagList setTags:_array];
-    
-    NSLog(@"tagViewAddTagButtonAction");
 }
 
 #pragma mark - Actions

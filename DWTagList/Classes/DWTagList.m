@@ -19,7 +19,7 @@
 @end
 
 
-@interface DWTagList () <DWTagButtonDelegate> {
+@interface DWTagList () {
     CGSize sizeFit;
 }
 
@@ -69,7 +69,6 @@
     
     [self needsReloadTagView];
 }
-
 
 #pragma mark - Tags
 
@@ -176,8 +175,6 @@
 }
 
 - (void)configureTagButton:(DWTagButton *)tagButton {
-    tagButton.delegate = self;
-    
     [tagButton setBackgroundColor:self.tagBackgroundColor];
     [tagButton setTagCornerRadius:self.cornerRadius];
     [tagButton setTagBorderWidth:self.borderWidth];
@@ -194,37 +191,6 @@
     }
 }
 
-#pragma mark - DWTagButtonDelegate
-
-- (void)tagButtonDeleteAction:(DWTagButton *)tagButton {
-    NSMutableArray *mutableTags = [NSMutableArray arrayWithArray:self.tags];
-    [mutableTags removeObject:tagButton.tagValue];
-    self.tags = mutableTags;
-    
-    if ([self.tagDelegate respondsToSelector:@selector(tagView:didRemoveTag:)]) {
-        [self.tagDelegate tagView:self didRemoveTag:tagButton.tagValue];
-    }
-}
-
-- (BOOL)tagButtonCanBecomeFirstResponder:(DWTagButton *)tagButton {
-    if (tagButton == self.addTagButton) {
-        return NO;
-    }
-    return self.showMenu;
-}
-
-- (BOOL)tagButtonMenuControllerCanPerformAction:(SEL)action {
-    if (!self.showMenu) {
-        return NO;
-    }
-    
-    if ([self.tagDelegate respondsToSelector:@selector(tagView:menuControllerCanPerformAction:)]) {
-        return [self.tagDelegate tagView:self menuControllerCanPerformAction:action];
-    }
-    
-    return (action == @selector(copy:)) || (action == @selector(delete:));
-}
-
 #pragma mark - Actions
 
 - (void)touchDownInside:(id)sender {
@@ -236,16 +202,8 @@
     DWTagButton *tagButton = (DWTagButton *)sender;
     [tagButton setBackgroundColor:self.tagBackgroundColor];
     
-    if (self.showMenu) {
-        [tagButton becomeFirstResponder];
-        
-        UIMenuController *menuController = [UIMenuController sharedMenuController];
-        [menuController setTargetRect:tagButton.frame inView:self];
-        [menuController setMenuVisible:YES animated:YES];
-    }
-    
-    if ([self.tagDelegate respondsToSelector:@selector(tagView:didSelectTag:)]) {
-        [self.tagDelegate tagView:self didSelectTag:tagButton.tagValue];
+    if ([self.tagDelegate respondsToSelector:@selector(tagView:tagButtonAction:tagValue:)]) {
+        [self.tagDelegate tagView:self tagButtonAction:tagButton tagValue:tagButton.tagValue];
     }
 }
 
@@ -263,8 +221,9 @@
     DWTagButton *tagButton = (DWTagButton *)sender;
     [tagButton setBackgroundColor:self.tagBackgroundColor];
     
-    if ([self.tagDelegate respondsToSelector:@selector(tagViewAddTagButtonAction:)]) {
-        [self.tagDelegate tagViewAddTagButtonAction:self];
+    
+    if ([self.tagDelegate respondsToSelector:@selector(tagView:addButtonAction:)]) {
+        [self.tagDelegate tagView:self addButtonAction:tagButton];
     }
 }
 

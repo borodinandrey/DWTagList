@@ -104,26 +104,6 @@
     self.iconImageView.image = image;
 }
 
-#pragma mark - UIMenuController
-
-- (BOOL)canBecomeFirstResponder {
-    return [self.delegate tagButtonCanBecomeFirstResponder:self];
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    return [self.delegate tagButtonMenuControllerCanPerformAction:action];
-}
-
-- (void)copy:(id)sender {
-    [[UIPasteboard generalPasteboard] setString:(self.tagLabel.text ?: [self.tagLabel.attributedText string])];
-}
-
-- (void)delete:(id)sender {
-    if ([self.delegate respondsToSelector:@selector(tagButtonDeleteAction:)]) {
-        [self.delegate tagButtonDeleteAction:self];
-    }
-}
-
 #pragma mark - Dynamic height
 
 + (CGSize)tagButtonSize:(id)tag

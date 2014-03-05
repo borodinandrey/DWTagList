@@ -8,13 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-
-@protocol DWTagButtonDelegate;
-
-
 @interface DWTagButton : UIButton
-
-@property (weak, readwrite, nonatomic) id<DWTagButtonDelegate> delegate;
 
 @property (weak, readwrite, nonatomic) id tagValue;
 
@@ -35,16 +29,3 @@
                showIcon:(BOOL)showIcon;
 
 @end
-
-
-@protocol DWTagButtonDelegate <NSObject>
-
-@required
-
-- (void)tagButtonDeleteAction:(DWTagButton *)tagButton;
-
-- (BOOL)tagButtonCanBecomeFirstResponder:(DWTagButton *)tagButton;
-- (BOOL)tagButtonMenuControllerCanPerformAction:(SEL)action;
-
-@end
-
