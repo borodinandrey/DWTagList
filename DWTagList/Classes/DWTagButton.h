@@ -21,6 +21,8 @@
 - (void)setTagTextShadowOffset:(CGSize)textShadowOffset;
 - (void)setTagIconImage:(UIImage *)image;
 
+- (UIImage *)tagIconImage;
+
 + (CGSize)tagButtonSize:(id)tag
                    font:(UIFont *)font
      constrainedToWidth:(CGFloat)maxWidth

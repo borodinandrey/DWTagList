@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DWTagButton.h"
+
 @protocol DWTagListDelegate;
 
 
@@ -65,8 +67,8 @@
 
 @optional
 
-- (void)tagView:(DWTagList *)tagView tagButtonAction:(UIButton *)tagButton tagValue:(id)tagValue;
-- (void)tagView:(DWTagList *)tagView addButtonAction:(UIButton *)addButton;
+- (void)tagView:(DWTagList *)tagView tagButtonAction:(DWTagButton *)tagButton tagValue:(id)tagValue;
+- (void)tagView:(DWTagList *)tagView addButtonAction:(DWTagButton *)addButton;
 
 @end
 

@@ -7,7 +7,6 @@
 
 #import "DWTagList.h"
 #import "DWTagListStyles.h"
-#import "DWTagButton.h"
 
 
 @implementation DWTagList (Strings)

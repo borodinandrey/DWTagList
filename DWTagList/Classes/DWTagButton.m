@@ -63,7 +63,7 @@
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:_tagValue];
         [attributedString addAttributes:@{NSFontAttributeName: self.tagLabel.font}
                                   range:NSMakeRange(0, ((NSAttributedString *)_tagValue).string.length)];
-
+        
         self.tagLabel.attributedText = attributedString;
     } else {
         self.tagLabel.text = [_tagValue description];
@@ -102,6 +102,10 @@
 
 - (void)setTagIconImage:(UIImage *)image {
     self.iconImageView.image = image;
+}
+
+- (UIImage *)tagIconImage {
+    return self.iconImageView.image;
 }
 
 #pragma mark - Dynamic height
