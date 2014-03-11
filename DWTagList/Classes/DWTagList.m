@@ -262,7 +262,9 @@
         
         if (self.automaticResize) {
             [self needsReloadTagView];
-            self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeFit.width, sizeFit.height);
+            CGFloat x = CGRectGetMinX(self.frame);
+            CGFloat y = CGRectGetMinY(self.frame);
+            self.frame = CGRectMake(isnan(x) ? 0.f : x, isnan(y) ? 0.f : y, sizeFit.width, sizeFit.height);
         } else {
             [self setNeedsLayout];
         }
