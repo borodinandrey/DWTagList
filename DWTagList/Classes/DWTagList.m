@@ -69,6 +69,12 @@
     [self needsReloadTagView];
 }
 
+- (void)resetViewFrame {
+    CGFloat x = CGRectGetMinX(self.frame);
+    CGFloat y = CGRectGetMinY(self.frame);
+    self.frame = CGRectMake(isnan(x) ? 0.f : x, isnan(y) ? 0.f : y, sizeFit.width, sizeFit.height);
+}
+
 #pragma mark - Tags
 
 - (void)setTags:(NSArray *)tags_ {
@@ -78,7 +84,7 @@
     
     if (self.automaticResize) {
         [self needsReloadTagView];
-        self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeFit.width, sizeFit.height);
+        [self resetViewFrame];
     } else {
         [self setNeedsLayout];
     }
@@ -261,9 +267,7 @@
         
         if (self.automaticResize) {
             [self needsReloadTagView];
-            CGFloat x = CGRectGetMinX(self.frame);
-            CGFloat y = CGRectGetMinY(self.frame);
-            self.frame = CGRectMake(isnan(x) ? 0.f : x, isnan(y) ? 0.f : y, sizeFit.width, sizeFit.height);
+            [self resetViewFrame];
         } else {
             [self setNeedsLayout];
         }
