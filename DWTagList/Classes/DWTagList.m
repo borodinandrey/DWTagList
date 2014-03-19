@@ -12,7 +12,7 @@
 @implementation DWTagList (Strings)
 
 + (NSString *)addTagString {
-    return NSLocalizedString(@"Add tag", @"Caption for Add tag button");
+    return NSLocalizedString(@"Add new", @"Caption for Add tag button");
 }
 
 @end
