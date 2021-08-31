@@ -153,8 +153,7 @@
         }
     }
     
-    sizeFit = CGSizeMake(CGRectGetWidth(self.frame),
-                         CGRectGetMinY(previousFrame) + CGRectGetHeight(previousFrame) + self.bottomMargin + 1.0f);
+    sizeFit = CGSizeMake(CGRectGetWidth(self.frame),CGRectGetHeight((self.frame)) + self.bottomMargin + 1.0f);
     self.contentSize = sizeFit;
 }
 
